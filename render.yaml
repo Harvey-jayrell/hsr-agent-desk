@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: hsr-agent-desk
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
