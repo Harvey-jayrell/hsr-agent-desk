@@ -1,0 +1,22 @@
+server {
+    listen ${PORT};
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Enable gzip compression for fast mobile loading during trippings
+    gzip on;
+    gzip_types text/plain text/css application/javascript text/html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Lightweight health check endpoint
+    location /health {
+        access_log off;
+        return 200 "ok\n";
+        add_header Content-Type text/plain;
+    }
+}
