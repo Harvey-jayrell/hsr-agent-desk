@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Human Shelter Realty — Agent Computation & Qualification Tool</title>
+  <!-- Load Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Load Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased transition-colors duration-200 min-h-screen pb-14">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <!-- Custom SVG Proptech Icon -->
+        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold tracking-tight leading-tight text-slate-900 dark:text-white">
+            HSR Agent Desk
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Rizal & Marikina Computation & Qualification Tool
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Reset Button -->
+        <button id="resetBtn" type="button" class="px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          Reset
+        </button>
+        <!-- Dark Mode Toggle -->
+        <button id="themeToggle" type="button" aria-label="Toggle Dark Mode" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <!-- Sun icon (shown in dark mode) -->
+          <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <!-- Moon icon (shown in light mode) -->
+          <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- LEFT COLUMN: Inputs & Qualification Checker (7 cols on desktop) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- CARD 1: Property & Project Selector -->
+        <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-center">1</span>
+              <h2 class="text-base font-bold text-slate-900 dark:text-white">Property & Project Selection</h2>
+            </div>
+            <span id="projectBadge" class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              Rodriguez, Rizal
+            </span>
+          </div>
+
+          <!-- Quick Filter Pills for Rodriguez Local Focus -->
+          <div class="mb-3">
+            <label for="projectSelect" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+              Select Project Preset
+            </label>
+            <select id="projectSelect" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <!-- Populated via JS -->
+            </select>
+          </div>
+
+          <!-- Quick Jump Chips for Rodriguez Projects -->
+          <div class="flex flex-wrap items-center gap-1.5 mb-4">
+            <span class="text-xs text-slate-500 dark:text-slate-400 mr-1">Rodriguez Quick Pick:</span>
+            <button type="button" data-preset="Aurella Ridge" class="quick-chip text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-slate-700 dark:text-slate-300 font-medium transition">
+              Aurella Ridge (₱4.3M)
+            </button>
+            <button type="button" data-preset="Alesso Residences" class="quick-chip text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-slate-700 dark:text-slate-300 font-medium transition">
+              Alesso (₱4.4M)
+            </button>
+            <button type="button" data-preset="Birmingham Residences" class="quick-chip text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-slate-700 dark:text-slate-300 font-medium transition">
+              Birmingham Res. (₱5.6M)
+            </button>
+          </div>
+
+          <!-- TCP & Reservation Fee Inputs -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="tcpInput" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                Total Contract Price (TCP)
+              </label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-sm">₱</span>
+                <input type="number" id="tcpInput" step="10000" min="0" value="4300000" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 pl-8 pr-3.5 py-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+            </div>
+
+            <div>
+              <label for="resFeeInput" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                Reservation Fee (Deductible from DP)
+              </label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-sm">₱</span>
+                <input type="number" id="resFeeInput" step="5000" min="0" value="20000" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 pl-8 pr-3.5 py-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CARD 2: Down Payment & Loan Terms -->
+        <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-center">2</span>
+            <h2 class="text-base font-bold text-slate-900 dark:text-white">Down Payment & Financing Terms</h2>
+          </div>
+
+          <!-- Down Payment % Slider & Term -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="dpPercentRange" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Down Payment (Equity)</label>
+                <span id="dpPercentLabel" class="text-sm font-bold text-emerald-600 dark:text-emerald-400">20%</span>
+              </div>
+              <input type="range" id="dpPercentRange" min="10" max="50" step="5" value="20" class="w-full accent-emerald-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg" />
+              <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+                <span>10%</span>
+                <span>20% Std</span>
+                <span>30%</span>
+                <span>50%</span>
+              </div>
+            </div>
+
+            <div>
+              <label for="dpMonthsSelect" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                DP / Equity Payment Term
+              </label>
+              <select id="dpMonthsSelect" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="1">Spot DP (1 Month)</option>
+                <option value="3">3 Months (RFO Promo)</option>
+                <option value="6">6 Months (RFO Term)</option>
+                <option value="12">12 Months</option>
+                <option value="18" selected>18 Months (Standard Pre-selling)</option>
+                <option value="24">24 Months</option>
+                <option value="36">36 Months</option>
+              </select>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">0% interest during equity period</p>
+            </div>
+          </div>
+
+          <!-- Bank vs Pag-IBIG Financing Toggle -->
+          <div class="mb-4">
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+              Loan Financing Type (Remaining <span id="loanPercentText">80%</span> Balance)
+            </label>
+            <div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <button type="button" id="bankToggleBtn" class="py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-sm transition">
+                🏦 Bank Financing (7.5%)
+              </button>
+              <button type="button" id="pagibigToggleBtn" class="py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+                🏠 Pag-IBIG Fund (6.25%)
+              </button>
+            </div>
+          </div>
+
+          <!-- Interest Rate & Loan Years -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="interestInput" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                Est. Annual Interest Rate (%)
+              </label>
+              <div class="relative">
+                <input type="number" id="interestInput" step="0.25" min="1" max="20" value="7.5" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 pl-3.5 pr-8 py-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-sm">%</span>
+              </div>
+            </div>
+
+            <div>
+              <label for="loanYearsSelect" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                Loan Term (Years)
+              </label>
+              <select id="loanYearsSelect" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="5">5 Years</option>
+                <option value="10">10 Years</option>
+                <option value="15">15 Years</option>
+                <option value="20" selected>20 Years (Bank Max)</option>
+                <option value="25">25 Years (Pag-IBIG)</option>
+                <option value="30">30 Years (Pag-IBIG Max)</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- CARD 3: Client Income Qualification Checker (30% - 35% Rule) -->
+        <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-center">3</span>
+              <h2 class="text-base font-bold text-slate-900 dark:text-white">Buyer Qualification Checker</h2>
+            </div>
+            <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">30%–35% Income Cap</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+            Enter your client's combined monthly gross income (including spouse/co-borrower) and existing monthly loans to check instant loan eligibility.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label for="clientIncomeInput" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                Combined Monthly Gross Income
+              </label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-sm">₱</span>
+                <input type="number" id="clientIncomeInput" step="5000" min="0" placeholder="e.g. 85000" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 pl-8 pr-3.5 py-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+            </div>
+
+            <div>
+              <label for="clientDebtInput" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                Existing Monthly Loans (Car/CC/etc.)
+              </label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-sm">₱</span>
+                <input type="number" id="clientDebtInput" step="1000" min="0" value="0" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 pl-8 pr-3.5 py-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Qualification Status Box -->
+          <div id="qualificationBox" class="rounded-xl p-4 border bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700">
+            <div class="flex items-start gap-3">
+              <div id="qualIcon" class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0 font-bold text-sm">
+                ?
+              </div>
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <h3 id="qualTitle" class="text-sm font-bold text-slate-800 dark:text-slate-200">
+                    Enter Client Income Above to Test
+                  </h3>
+                  <span id="qualBadge" class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                    Waiting for Income
+                  </span>
+                </div>
+                <p id="qualDescription" class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                  Based on the current property computation, your client needs at least <strong id="inlineReqIncome" class="text-slate-900 dark:text-white">₱79,235/mo</strong> combined gross income (at 35% cap).
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Sticky Client Summary & Agent Commission Tabs (5 cols on desktop) -->
+      <div class="lg:col-span-5 lg:sticky lg:top-20 space-y-4">
+
+        <!-- View Switcher Tabs: Client Quote vs Agent Commission -->
+        <div class="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-slate-200/80 dark:bg-slate-800 border border-slate-300/60 dark:border-slate-700">
+          <button type="button" id="tabClientBtn" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm transition">
+            📋 Client Computation
+          </button>
+          <button type="button" id="tabCommissionBtn" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+            💰 My 3% Commission
+          </button>
+        </div>
+
+        <!-- PANEL A: CLIENT-READY COMPUTATION CARD -->
+        <div id="clientSummaryPanel" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md overflow-hidden">
+          <!-- Card Top Banner -->
+          <div class="bg-gradient-to-r from-emerald-700 to-teal-700 text-white p-5">
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-100">Sample Computation</span>
+              <span id="summaryFinancingBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-white/20 text-white">
+                Bank • 20 Yrs
+              </span>
+            </div>
+            <h3 id="summaryProjectName" class="text-lg font-extrabold tracking-tight">Aurella Ridge</h3>
+            <p id="summaryProjectLoc" class="text-xs text-emerald-100">Rodriguez, Rizal</p>
+
+            <div class="mt-4 pt-3 border-t border-white/15 flex items-baseline justify-between">
+              <span class="text-xs text-emerald-100">Total Contract Price</span>
+              <span id="summaryTcp" class="text-xl font-extrabold">₱4,300,000</span>
+            </div>
+          </div>
+
+          <!-- Breakdown Rows -->
+          <div class="p-5 space-y-4">
+            <!-- Step 1: Down Payment / Equity -->
+            <div class="space-y-2 pb-3.5 border-b border-slate-100 dark:border-slate-800">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400">Down Payment (<span id="sumDpPct">20%</span>)</span>
+                <span id="sumGrossDp" class="font-semibold text-slate-800 dark:text-slate-200">₱860,000</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400">Less: Reservation Fee</span>
+                <span id="sumResFee" class="font-semibold text-emerald-600 dark:text-emerald-400">- ₱20,000</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400">Net Down Payment</span>
+                <span id="sumNetDp" class="font-bold text-slate-900 dark:text-white">₱840,000</span>
+              </div>
+              <div class="mt-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between">
+                <div>
+                  <span class="block text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400">Monthly Equity (<span id="sumDpMos">18</span> mos)</span>
+                  <span class="text-[11px] text-slate-400">0% interest installment</span>
+                </div>
+                <span id="sumMonthlyDp" class="text-base font-extrabold text-slate-900 dark:text-white">₱46,667/mo</span>
+              </div>
+            </div>
+
+            <!-- Step 2: Loan Balance & Amortization -->
+            <div class="space-y-2 pb-3.5 border-b border-slate-100 dark:border-slate-800">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400">Loanable Balance (<span id="sumLoanPct">80%</span>)</span>
+                <span id="sumLoanAmount" class="font-bold text-slate-900 dark:text-white">₱3,440,000</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400">Indicative Rate & Term</span>
+                <span id="sumRateTerm" class="font-medium text-slate-700 dark:text-slate-300">7.5% p.a. • 20 Years</span>
+              </div>
+              <div class="mt-2 p-3.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/50 border border-emerald-200/70 dark:border-emerald-800/60 flex items-center justify-between">
+                <div>
+                  <span class="block text-xs font-bold text-emerald-900 dark:text-emerald-200">Est. Monthly Amortization</span>
+                  <span class="text-[11px] text-emerald-700 dark:text-emerald-400">Starts after equity period</span>
+                </div>
+                <span id="sumMonthlyAmort" class="text-lg font-extrabold text-emerald-700 dark:text-emerald-300">₱27,732/mo</span>
+              </div>
+            </div>
+
+            <!-- Step 3: Required Gross Income -->
+            <div class="space-y-1.5">
+              <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Required Combined Gross Income
+              </span>
+              <div class="grid grid-cols-2 gap-2.5">
+                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700">
+                  <span class="block text-[11px] text-slate-500 dark:text-slate-400">Standard (35% Cap)</span>
+                  <span id="sumReqIncome35" class="text-sm font-extrabold text-slate-900 dark:text-white">₱79,235/mo</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700">
+                  <span class="block text-[11px] text-slate-500 dark:text-slate-400">Conservative (30%)</span>
+                  <span id="sumReqIncome30" class="text-sm font-extrabold text-slate-900 dark:text-white">₱92,441/mo</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Copy to Messenger CTA -->
+            <div class="pt-2">
+              <button type="button" id="copyMessengerBtn" class="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span id="copyBtnText">Copy Client Computation for Messenger</span>
+              </button>
+              <p class="text-[11px] text-center text-slate-400 mt-2">
+                Formats clean computation ready to paste into Messenger or Viber
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL B: AGENT COMMISSION BREAKDOWN CARD (Hidden by default) -->
+        <div id="commissionPanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md overflow-hidden">
+          <div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-5">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-300">Agent Earnings Estimator</span>
+            <h3 class="text-lg font-extrabold tracking-tight mt-0.5">Commission & Tranche Payouts</h3>
+            <p class="text-xs text-slate-300 mt-0.5">Private view — not included in client copy</p>
+          </div>
+
+          <div class="p-5 space-y-4">
+            <!-- Commission Rate & EWT Tax Controls -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="commRateInput" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  Commission Rate (%)
+                </label>
+                <div class="relative">
+                  <input type="number" id="commRateInput" step="0.25" min="0.5" max="10" value="3.0" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-3 pr-7 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">%</span>
+                </div>
+              </div>
+
+              <div>
+                <label for="ewtTaxSelect" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  Withholding Tax (EWT)
+                </label>
+                <select id="ewtTaxSelect" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <option value="0">0% (Gross / Pre-tax)</option>
+                  <option value="5" selected>5% EWT (BIR Registered &lt;3M)</option>
+                  <option value="10">10% EWT (Standard Rate)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Tranche Release Split Slider -->
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+              <div class="flex items-center justify-between mb-1">
+                <label for="trancheSplitRange" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Release Split (Equity / Takeout)</label>
+                <span id="trancheSplitLabel" class="text-xs font-bold text-emerald-600 dark:text-emerald-400">30% / 70%</span>
+              </div>
+              <input type="range" id="trancheSplitRange" min="10" max="60" step="10" value="30" class="w-full accent-emerald-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg" />
+              <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+                <span>10/90</span>
+                <span>30/70 Typical</span>
+                <span>50/50</span>
+                <span>60/40</span>
+              </div>
+            </div>
+
+            <!-- Gross & Net Commission Totals -->
+            <div class="space-y-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400">Gross Commission (<span id="commRateText">3%</span> of TCP)</span>
+                <span id="commGrossVal" class="font-bold text-slate-900 dark:text-white">₱129,000</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400">Less: Withholding Tax (<span id="commTaxPctText">5%</span>)</span>
+                <span id="commTaxVal" class="font-semibold text-rose-600 dark:text-rose-400">- ₱6,450</span>
+              </div>
+              <div class="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-between mt-2">
+                <div>
+                  <span class="block text-xs font-bold text-emerald-900 dark:text-emerald-200">Total Net Take-Home</span>
+                  <span class="text-[11px] text-emerald-700 dark:text-emerald-400">After EWT deduction</span>
+                </div>
+                <span id="commNetVal" class="text-xl font-extrabold text-emerald-700 dark:text-emerald-300">₱122,550</span>
+              </div>
+            </div>
+
+            <!-- Tranche Breakdown Cards -->
+            <div class="space-y-2.5">
+              <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Estimated Payout Schedule (Net)
+              </span>
+              <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 flex items-center justify-between">
+                <div>
+                  <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Tranche 1: Equity Milestone (<span id="t1PctLabel">30%</span>)</span>
+                  <span class="block text-[11px] text-slate-500 dark:text-slate-400">Upon CTS + required DP paid</span>
+                </div>
+                <span id="t1NetVal" class="text-sm font-extrabold text-slate-900 dark:text-white">₱36,765</span>
+              </div>
+              <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 flex items-center justify-between">
+                <div>
+                  <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Tranche 2: Loan Takeout (<span id="t2PctLabel">70%</span>)</span>
+                  <span class="block text-[11px] text-slate-500 dark:text-slate-400">Upon Bank / Pag-IBIG release</span>
+                </div>
+                <span id="t2NetVal" class="text-sm font-extrabold text-slate-900 dark:text-white">₱85,785</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Hidden textarea fallback for reliable clipboard copy inside iframes -->
+  <textarea id="clipboardHelper" class="sr-only" aria-hidden="true"></textarea>
+
+  <!-- Toast Notification Banner -->
+  <div id="toastBanner" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-3 rounded-xl bg-slate-900 dark:bg-emerald-600 text-white text-xs sm:text-sm font-semibold shadow-lg flex items-center gap-2 opacity-0 pointer-events-none transition-opacity duration-200">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-400 dark:text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span id="toastText">Client computation copied! Ready to paste in Messenger.</span>
+  </div>
+
+  <script>
+    // Complete Human Shelter Realty Rizal & Marikina Project Presets
+    const PROJECT_PRESETS = [
+      { name: "Easton Park", location: "Binangonan, Rizal", developer: "Taylormade Dev't. Corp.", tcp: 2500000 },
+      { name: "Birmingham Highland", location: "Tanay, Rizal", developer: "Homeowners Dev't Corp.", tcp: 3600000 },
+      { name: "Aurella Ridge", location: "Rodriguez, Rizal", developer: "Taylormade Dev't. Corp.", tcp: 4300000 },
+      { name: "Alesso Residences", location: "Rodriguez, Rizal", developer: "Taylormade Dev't. Corp.", tcp: 4400000 },
+      { name: "Birmingham Alberto", location: "San Mateo, Rizal", developer: "Homeowners Dev't Corp.", tcp: 4700000 },
+      { name: "Birmingham Residences", location: "Rodriguez, Rizal", developer: "Homeowners Dev't Corp.", tcp: 5600000 },
+      { name: "Windy Hills", location: "Binangonan, Rizal", developer: "Green Tag", tcp: 5600000 },
+      { name: "Birmingham Camden", location: "Cainta, Rizal", developer: "Homeowners Dev't Corp.", tcp: 5700000 },
+      { name: "Traveo", location: "San Mateo, Rizal", developer: "Taylormade Dev't. Corp.", tcp: 5900000 },
+      { name: "Jasmine Residences", location: "San Mateo, Rizal", developer: "Firebird Holdings, Corp.", tcp: 6600000 },
+      { name: "Two Sereno Townhomes", location: "Antipolo, Rizal", developer: "Taylormade Dev't. Corp.", tcp: 7100000 },
+      { name: "Ahanna Residences", location: "Antipolo, Rizal", developer: "Taylormade Dev't. Corp.", tcp: 7200000 },
+      { name: "One Amari Place", location: "Antipolo, Rizal", developer: "Taylormade Dev't. Corp.", tcp: 7800000 },
+      { name: "The Nest Peaks", location: "Antipolo, Rizal", developer: "Firebird Holdings, Corp.", tcp: 9000000 },
+      { name: "Cloud Residences", location: "Antipolo, Rizal", developer: "Firebird Holdings Corp.", tcp: 11000000 },
+      { name: "Simeona Duplex", location: "Marikina City", developer: "Homeowners Dev't Corp.", tcp: 12000000 },
+      { name: "The Nest Royale", location: "Marikina City", developer: "Firebird Holdings Corp.", tcp: 17000000 },
+      { name: "Custom Property / TCP", location: "Rizal / Metro Manila", developer: "Custom", tcp: null }
+    ];
+
+    // Application State
+    let state = {
+      projectName: "Aurella Ridge",
+      projectLocation: "Rodriguez, Rizal",
+      financingType: "Bank", // "Bank" or "Pag-IBIG"
+      activeTab: "client"    // "client" or "commission"
+    };
+
+    // DOM Element References
+    const el = {
+      projectSelect: document.getElementById("projectSelect"),
+      projectBadge: document.getElementById("projectBadge"),
+      tcpInput: document.getElementById("tcpInput"),
+      resFeeInput: document.getElementById("resFeeInput"),
+      dpPercentRange: document.getElementById("dpPercentRange"),
+      dpPercentLabel: document.getElementById("dpPercentLabel"),
+      dpMonthsSelect: document.getElementById("dpMonthsSelect"),
+      loanPercentText: document.getElementById("loanPercentText"),
+      bankToggleBtn: document.getElementById("bankToggleBtn"),
+      pagibigToggleBtn: document.getElementById("pagibigToggleBtn"),
+      interestInput: document.getElementById("interestInput"),
+      loanYearsSelect: document.getElementById("loanYearsSelect"),
+      clientIncomeInput: document.getElementById("clientIncomeInput"),
+      clientDebtInput: document.getElementById("clientDebtInput"),
+      qualificationBox: document.getElementById("qualificationBox"),
+      qualIcon: document.getElementById("qualIcon"),
+      qualTitle: document.getElementById("qualTitle"),
+      qualBadge: document.getElementById("qualBadge"),
+      qualDescription: document.getElementById("qualDescription"),
+      tabClientBtn: document.getElementById("tabClientBtn"),
+      tabCommissionBtn: document.getElementById("tabCommissionBtn"),
+      clientSummaryPanel: document.getElementById("clientSummaryPanel"),
+      commissionPanel: document.getElementById("commissionPanel"),
+      // Summary Outputs
+      summaryFinancingBadge: document.getElementById("summaryFinancingBadge"),
+      summaryProjectName: document.getElementById("summaryProjectName"),
+      summaryProjectLoc: document.getElementById("summaryProjectLoc"),
+      summaryTcp: document.getElementById("summaryTcp"),
+      sumDpPct: document.getElementById("sumDpPct"),
+      sumGrossDp: document.getElementById("sumGrossDp"),
+      sumResFee: document.getElementById("sumResFee"),
+      sumNetDp: document.getElementById("sumNetDp"),
+      sumDpMos: document.getElementById("sumDpMos"),
+      sumMonthlyDp: document.getElementById("sumMonthlyDp"),
+      sumLoanPct: document.getElementById("sumLoanPct"),
+      sumLoanAmount: document.getElementById("sumLoanAmount"),
+      sumRateTerm: document.getElementById("sumRateTerm"),
+      sumMonthlyAmort: document.getElementById("sumMonthlyAmort"),
+      sumReqIncome35: document.getElementById("sumReqIncome35"),
+      sumReqIncome30: document.getElementById("sumReqIncome30"),
+      copyMessengerBtn: document.getElementById("copyMessengerBtn"),
+      copyBtnText: document.getElementById("copyBtnText"),
+      // Commission Outputs
+      commRateInput: document.getElementById("commRateInput"),
+      ewtTaxSelect: document.getElementById("ewtTaxSelect"),
+      trancheSplitRange: document.getElementById("trancheSplitRange"),
+      trancheSplitLabel: document.getElementById("trancheSplitLabel"),
+      commRateText: document.getElementById("commRateText"),
+      commGrossVal: document.getElementById("commGrossVal"),
+      commTaxPctText: document.getElementById("commTaxPctText"),
+      commTaxVal: document.getElementById("commTaxVal"),
+      commNetVal: document.getElementById("commNetVal"),
+      t1PctLabel: document.getElementById("t1PctLabel"),
+      t2PctLabel: document.getElementById("t2PctLabel"),
+      t1NetVal: document.getElementById("t1NetVal"),
+      t2NetVal: document.getElementById("t2NetVal"),
+      // Utilities
+      themeToggle: document.getElementById("themeToggle"),
+      resetBtn: document.getElementById("resetBtn"),
+      clipboardHelper: document.getElementById("clipboardHelper"),
+      toastBanner: document.getElementById("toastBanner"),
+      toastText: document.getElementById("toastText")
+    };
+
+    // Format number as Philippine Peso (rounded to nearest peso)
+    function formatPHP(amount) {
+      const val = Math.round(isFinite(amount) ? amount : 0);
+      return "₱" + val.toLocaleString("en-PH");
+    }
+
+    // Standard fixed-rate monthly mortgage amortization formula
+    function calculateMonthlyAmortization(principal, annualRatePct, years) {
+      if (principal <= 0) return 0;
+      const totalMonths = years * 12;
+      if (annualRatePct <= 0) return principal / totalMonths;
+      const monthlyRate = (annualRatePct / 100) / 12;
+      const factor = Math.pow(1 + monthlyRate, totalMonths);
+      return (principal * monthlyRate * factor) / (factor - 1);
+    }
+
+    // Populate Project Dropdown
+    function initProjectDropdown() {
+      el.projectSelect.innerHTML = "";
+      PROJECT_PRESETS.forEach((proj) => {
+        const option = document.createElement("option");
+        option.value = proj.name;
+        option.textContent = proj.tcp
+          ? `${proj.name} (${proj.location}) — ${formatPHP(proj.tcp)} up`
+          : `${proj.name}`;
+        if (proj.name === state.projectName) {
+          option.selected = true;
+        }
+        el.projectSelect.appendChild(option);
+      });
+    }
+
+    // Handle Project Change
+    function selectProjectByName(name) {
+      const preset = PROJECT_PRESETS.find((p) => p.name === name);
+      if (!preset) return;
+      state.projectName = preset.name;
+      state.projectLocation = preset.location;
+      el.projectSelect.value = preset.name;
+      el.projectBadge.textContent = preset.location;
+      if (preset.tcp !== null) {
+        el.tcpInput.value = preset.tcp;
+      }
+      recalculateAll();
+    }
+
+    // Main Recalculation & UI Render Function
+    function recalculateAll() {
+      const tcp = Math.max(0, parseFloat(el.tcpInput.value) || 0);
+      const resFee = Math.max(0, parseFloat(el.resFeeInput.value) || 0);
+      const dpPct = parseFloat(el.dpPercentRange.value) || 20;
+      const loanPct = 100 - dpPct;
+      const dpMonths = Math.max(1, parseInt(el.dpMonthsSelect.value, 10) || 18);
+      const annualRate = Math.max(0, parseFloat(el.interestInput.value) || 0);
+      const loanYears = Math.max(1, parseInt(el.loanYearsSelect.value, 10) || 20);
+
+      // Update labels for DP & Loan %
+      el.dpPercentLabel.textContent = `${dpPct}%`;
+      el.loanPercentText.textContent = `${loanPct}%`;
+
+      // Down Payment Math
+      const grossDp = tcp * (dpPct / 100);
+      const netDp = Math.max(0, grossDp - resFee);
+      const monthlyDp = netDp / dpMonths;
+
+      // Loan Math
+      const loanAmount = Math.max(0, tcp - grossDp);
+      const monthlyAmort = calculateMonthlyAmortization(loanAmount, annualRate, loanYears);
+
+      // Income Requirements (35% standard ceiling & 30% conservative ceiling)
+      const reqIncome35 = monthlyAmort > 0 ? monthlyAmort / 0.35 : 0;
+      const reqIncome30 = monthlyAmort > 0 ? monthlyAmort / 0.30 : 0;
+
+      // Update Client Computation Summary Card
+      el.summaryFinancingBadge.textContent = `${state.financingType} • ${loanYears} Yrs`;
+      el.summaryProjectName.textContent = state.projectName;
+      el.summaryProjectLoc.textContent = state.projectLocation;
+      el.summaryTcp.textContent = formatPHP(tcp);
+
+      el.sumDpPct.textContent = `${dpPct}%`;
+      el.sumGrossDp.textContent = formatPHP(grossDp);
+      el.sumResFee.textContent = `- ${formatPHP(resFee)}`;
+      el.sumNetDp.textContent = formatPHP(netDp);
+      el.sumDpMos.textContent = dpMonths;
+      el.sumMonthlyDp.textContent = `${formatPHP(monthlyDp)}/mo`;
+
+      el.sumLoanPct.textContent = `${loanPct}%`;
+      el.sumLoanAmount.textContent = formatPHP(loanAmount);
+      el.sumRateTerm.textContent = `${annualRate}% p.a. • ${loanYears} Years`;
+      el.sumMonthlyAmort.textContent = `${formatPHP(monthlyAmort)}/mo`;
+
+      el.sumReqIncome35.textContent = `${formatPHP(reqIncome35)}/mo`;
+      el.sumReqIncome30.textContent = `${formatPHP(reqIncome30)}/mo`;
+
+      // Update Qualification Checker
+      updateQualificationStatus(monthlyAmort, reqIncome35, reqIncome30);
+
+      // Update Agent Commission Tab
+      const commRate = Math.max(0, parseFloat(el.commRateInput.value) || 0);
+      const ewtPct = Math.max(0, parseFloat(el.ewtTaxSelect.value) || 0);
+      const t1Split = parseInt(el.trancheSplitRange.value, 10) || 30;
+      const t2Split = 100 - t1Split;
+
+      const grossComm = tcp * (commRate / 100);
+      const taxAmount = grossComm * (ewtPct / 100);
+      const netComm = grossComm - taxAmount;
+      const t1Net = netComm * (t1Split / 100);
+      const t2Net = netComm * (t2Split / 100);
+
+      el.trancheSplitLabel.textContent = `${t1Split}% / ${t2Split}%`;
+      el.commRateText.textContent = `${commRate}%`;
+      el.commGrossVal.textContent = formatPHP(grossComm);
+      el.commTaxPctText.textContent = `${ewtPct}%`;
+      el.commTaxVal.textContent = `- ${formatPHP(taxAmount)}`;
+      el.commNetVal.textContent = formatPHP(netComm);
+      el.t1PctLabel.textContent = `${t1Split}%`;
+      el.t2PctLabel.textContent = `${t2Split}%`;
+      el.t1NetVal.textContent = formatPHP(t1Net);
+      el.t2NetVal.textContent = formatPHP(t2Net);
+    }
+
+    // Evaluate Client Income Qualification (30% - 35% Rule minus existing debts)
+    function updateQualificationStatus(monthlyAmort, reqIncome35, reqIncome30) {
+      const rawIncome = el.clientIncomeInput.value.trim();
+      const clientIncome = Math.max(0, parseFloat(rawIncome) || 0);
+      const existingDebt = Math.max(0, parseFloat(el.clientDebtInput.value) || 0);
+
+      // Reset classes
+      el.qualificationBox.className = "rounded-xl p-4 border transition-colors";
+      el.qualIcon.className = "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 font-bold text-sm";
+      el.qualBadge.className = "text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md";
+
+      if (!rawIncome || clientIncome <= 0) {
+        el.qualificationBox.classList.add("bg-slate-50", "dark:bg-slate-800/60", "border-slate-200", "dark:border-slate-700");
+        el.qualIcon.classList.add("bg-slate-200", "dark:bg-slate-700", "text-slate-600", "dark:text-slate-300");
+        el.qualIcon.textContent = "?";
+        el.qualBadge.classList.add("bg-slate-200", "dark:bg-slate-700", "text-slate-700", "dark:text-slate-300");
+        el.qualBadge.textContent = "Waiting for Income";
+        el.qualTitle.textContent = "Enter Client Income Above to Test";
+        el.qualDescription.innerHTML = `Based on this computation, your client needs at least <strong class="text-slate-900 dark:text-white">${formatPHP(reqIncome35)}/mo</strong> combined gross income (at 35% ceiling).`;
+        return;
+      }
+
+      // Max allowable monthly housing amortization after subtracting existing monthly debts
+      const maxAllowable35 = Math.max(0, (clientIncome * 0.35) - existingDebt);
+      const maxAllowable30 = Math.max(0, (clientIncome * 0.30) - existingDebt);
+      const totalRequiredIncomeWithDebt = (monthlyAmort + existingDebt) / 0.35;
+      const incomeShortfall = Math.max(0, totalRequiredIncomeWithDebt - clientIncome);
+
+      if (monthlyAmort <= maxAllowable30) {
+        // Comfortably Qualified (<= 30%)
+        el.qualificationBox.classList.add("bg-emerald-50", "dark:bg-emerald-950/50", "border-emerald-200", "dark:border-emerald-800");
+        el.qualIcon.classList.add("bg-emerald-600", "text-white");
+        el.qualIcon.textContent = "✓";
+        el.qualBadge.classList.add("bg-emerald-200", "dark:bg-emerald-900", "text-emerald-900", "dark:text-emerald-200");
+        el.qualBadge.textContent = "Strongly Qualified";
+        el.qualTitle.textContent = "Passes 30% Conservative Bank Ratio";
+        el.qualDescription.innerHTML = `Client's available amortization capacity is <strong>${formatPHP(maxAllowable30)}–${formatPHP(maxAllowable35)}/mo</strong>, comfortably covering the <strong>${formatPHP(monthlyAmort)}/mo</strong> amortization.`;
+      } else if (monthlyAmort <= maxAllowable35) {
+        // Qualified within 30% - 35% standard band
+        el.qualificationBox.classList.add("bg-emerald-50", "dark:bg-emerald-950/50", "border-emerald-200", "dark:border-emerald-800");
+        el.qualIcon.classList.add("bg-emerald-600", "text-white");
+        el.qualIcon.textContent = "✓";
+        el.qualBadge.classList.add("bg-emerald-200", "dark:bg-emerald-900", "text-emerald-900", "dark:text-emerald-200");
+        el.qualBadge.textContent = "Qualified (35% Cap)";
+        el.qualTitle.textContent = "Within Standard 35% Approval Limit";
+        el.qualDescription.innerHTML = `Client's max allowed amortization is <strong>${formatPHP(maxAllowable35)}/mo</strong> (35% cap${existingDebt > 0 ? " net of existing loans" : ""}). Fits the <strong>${formatPHP(monthlyAmort)}/mo</strong> payment.`;
+      } else if (monthlyAmort <= maxAllowable35 * 1.15) {
+        // Borderline (within 15% of ceiling)
+        el.qualificationBox.classList.add("bg-amber-50", "dark:bg-amber-950/40", "border-amber-200", "dark:border-amber-800");
+        el.qualIcon.classList.add("bg-amber-500", "text-white");
+        el.qualIcon.textContent = "!";
+        el.qualBadge.classList.add("bg-amber-200", "dark:bg-amber-900", "text-amber-900", "dark:text-amber-200");
+        el.qualBadge.textContent = "Borderline";
+        el.qualTitle.textContent = "Slightly Over 35% Cap — Needs Co-Borrower or Longer Term";
+        el.qualDescription.innerHTML = `Short by roughly <strong>${formatPHP(incomeShortfall)}/mo</strong> in gross income. Suggest adding a spouse/co-borrower, switching to <strong>Pag-IBIG (30 yrs)</strong>, or increasing DP.`;
+      } else {
+        // Over Budget
+        el.qualificationBox.classList.add("bg-rose-50", "dark:bg-rose-950/40", "border-rose-200", "dark:border-rose-800");
+        el.qualIcon.classList.add("bg-rose-600", "text-white");
+        el.qualIcon.textContent = "✕";
+        el.qualBadge.classList.add("bg-rose-200", "dark:bg-rose-900", "text-rose-900", "dark:text-rose-200");
+        el.qualBadge.textContent = "Income Short";
+        el.qualTitle.textContent = "Exceeds 35% Bank/Pag-IBIG Limit";
+        el.qualDescription.innerHTML = `Client needs <strong>${formatPHP(incomeShortfall)}/mo more</strong> in combined gross income (or a co-borrower) to qualify for <strong>${formatPHP(monthlyAmort)}/mo</strong>. Consider pitching a lower-TCP project.`;
+      }
+    }
+
+    // Generate Clean Formatted Text for Messenger / Viber
+    function buildMessengerMessage() {
+      const tcp = Math.max(0, parseFloat(el.tcpInput.value) || 0);
+      const resFee = Math.max(0, parseFloat(el.resFeeInput.value) || 0);
+      const dpPct = parseFloat(el.dpPercentRange.value) || 20;
+      const loanPct = 100 - dpPct;
+      const dpMonths = Math.max(1, parseInt(el.dpMonthsSelect.value, 10) || 18);
+      const annualRate = Math.max(0, parseFloat(el.interestInput.value) || 0);
+      const loanYears = Math.max(1, parseInt(el.loanYearsSelect.value, 10) || 20);
+
+      const grossDp = tcp * (dpPct / 100);
+      const netDp = Math.max(0, grossDp - resFee);
+      const monthlyDp = netDp / dpMonths;
+      const loanAmount = Math.max(0, tcp - grossDp);
+      const monthlyAmort = calculateMonthlyAmortization(loanAmount, annualRate, loanYears);
+      const reqIncome35 = monthlyAmort > 0 ? monthlyAmort / 0.35 : 0;
+
+      return [
+        `🏡 *SAMPLE COMPUTATION — ${state.projectName.toUpperCase()}*`,
+        `📍 Location: ${state.projectLocation}`,
+        ``,
+        `💰 *Total Contract Price (TCP):* ${formatPHP(tcp)}`,
+        ``,
+        `📌 *1. DOWN PAYMENT / EQUITY (${dpPct}%)*`,
+        `• Gross Down Payment: ${formatPHP(grossDp)}`,
+        `• Less Reservation Fee: ${formatPHP(resFee)}`,
+        `• Net Down Payment: ${formatPHP(netDp)}`,
+        `• *Monthly DP (${dpMonths} mos @ 0% int.): ${formatPHP(monthlyDp)}/mo*`,
+        ``,
+        `🏦 *2. ${state.financingType.toUpperCase()} FINANCING (${loanPct}% Balance)*`,
+        `• Loanable Amount: ${formatPHP(loanAmount)}`,
+        `• Est. Monthly Amortization (${loanYears} yrs @ ${annualRate}%): *${formatPHP(monthlyAmort)}/mo*`,
+        `• Est. Required Combined Income: ~${formatPHP(reqIncome35)}/mo`,
+        ``,
+        `📅 *Note:* Prices & rates are indicative and subject to final developer/bank approval. Message me if you'd like to schedule a site viewing! 😊`
+      ].join("\n");
+    }
+
+    // Show Toast Banner
+    let toastTimer = null;
+    function showToast(message) {
+      el.toastText.textContent = message;
+      el.toastBanner.classList.remove("opacity-0", "pointer-events-none");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.toastBanner.classList.add("opacity-0", "pointer-events-none");
+      }, 2800);
+    }
+
+    // Copy to Clipboard using iframe-safe execCommand fallback
+    function copyComputationToClipboard() {
+      const text = buildMessengerMessage();
+      el.clipboardHelper.value = text;
+      el.clipboardHelper.classList.remove("sr-only");
+      el.clipboardHelper.select();
+      el.clipboardHelper.setSelectionRange(0, 99999);
+      try {
+        document.execCommand("copy");
+        el.copyBtnText.textContent = "Copied! Paste in Messenger";
+        showToast("Client computation copied! Ready to paste in Messenger.");
+        setTimeout(() => {
+          el.copyBtnText.textContent = "Copy Client Computation for Messenger";
+        }, 2200);
+      } catch (err) {
+        showToast("Unable to auto-copy. Please select and copy manually.");
+      }
+      el.clipboardHelper.classList.add("sr-only");
+    }
+
+    // Financing Toggle Handlers (Bank vs Pag-IBIG)
+    function setFinancingType(type) {
+      state.financingType = type;
+      if (type === "Bank") {
+        el.bankToggleBtn.className = "py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-sm transition";
+        el.pagibigToggleBtn.className = "py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition";
+        el.interestInput.value = "7.5";
+        el.loanYearsSelect.value = "20";
+      } else {
+        el.pagibigToggleBtn.className = "py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-sm transition";
+        el.bankToggleBtn.className = "py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition";
+        el.interestInput.value = "6.25";
+        el.loanYearsSelect.value = "30";
+      }
+      recalculateAll();
+    }
+
+    // Tab Switcher Handlers (Client Summary vs Agent Commission)
+    function switchRightTab(tab) {
+      state.activeTab = tab;
+      if (tab === "client") {
+        el.tabClientBtn.className = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm transition";
+        el.tabCommissionBtn.className = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition";
+        el.clientSummaryPanel.classList.remove("hidden");
+        el.commissionPanel.classList.add("hidden");
+      } else {
+        el.tabCommissionBtn.className = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm transition";
+        el.tabClientBtn.className = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition";
+        el.commissionPanel.classList.remove("hidden");
+        el.clientSummaryPanel.classList.add("hidden");
+      }
+    }
+
+    // Event Listeners
+    el.projectSelect.addEventListener("change", (e) => selectProjectByName(e.target.value));
+
+    document.querySelectorAll(".quick-chip").forEach((btn) => {
+      btn.addEventListener("click", () => selectProjectByName(btn.dataset.preset));
+    });
+
+    [
+      el.tcpInput,
+      el.resFeeInput,
+      el.dpPercentRange,
+      el.dpMonthsSelect,
+      el.interestInput,
+      el.loanYearsSelect,
+      el.clientIncomeInput,
+      el.clientDebtInput,
+      el.commRateInput,
+      el.ewtTaxSelect,
+      el.trancheSplitRange
+    ].forEach((input) => {
+      input.addEventListener("input", recalculateAll);
+      input.addEventListener("change", recalculateAll);
+    });
+
+    el.bankToggleBtn.addEventListener("click", () => setFinancingType("Bank"));
+    el.pagibigToggleBtn.addEventListener("click", () => setFinancingType("Pag-IBIG"));
+
+    el.tabClientBtn.addEventListener("click", () => switchRightTab("client"));
+    el.tabCommissionBtn.addEventListener("click", () => switchRightTab("commission"));
+
+    el.copyMessengerBtn.addEventListener("click", copyComputationToClipboard);
+
+    el.themeToggle.addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark");
+    });
+
+    el.resetBtn.addEventListener("click", () => {
+      el.resFeeInput.value = 20000;
+      el.dpPercentRange.value = 20;
+      el.dpMonthsSelect.value = "18";
+      el.clientIncomeInput.value = "";
+      el.clientDebtInput.value = 0;
+      el.commRateInput.value = 3.0;
+      el.ewtTaxSelect.value = "5";
+      el.trancheSplitRange.value = 30;
+      setFinancingType("Bank");
+      selectProjectByName("Aurella Ridge");
+      showToast("Calculator reset to default values.");
+    });
+
+    // Initialize on Page Load
+    window.addEventListener("DOMContentLoaded", () => {
+      initProjectDropdown();
+      recalculateAll();
+    });
+  </script>
+</body>
+</html>
